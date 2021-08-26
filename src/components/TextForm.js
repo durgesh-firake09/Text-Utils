@@ -13,6 +13,11 @@ export default function TextForm(props) {
     setText(newText);
   };
 
+  const removeExtraSpaces = () => {
+    let newText = text.split(/[ ]+/).join(" ");
+    setText(newText);
+  };
+
   const clearText = () => {
     setText("");
   };
@@ -22,10 +27,10 @@ export default function TextForm(props) {
   };
 
   const copyText = () => {
-    let copyText = document.getElementById("text");
-    copyText.select();
-    navigator.clipboard.writeText(copyText.value);
-    props.showAlert("success", "Success", " Text Copied to Clipboard");
+    if (text.length !== 0) {
+      navigator.clipboard.writeText(text);
+      props.showAlert("success", "Success", " Text Copied to Clipboard");
+    }
   };
 
   const pasteText = async () => {
@@ -91,7 +96,7 @@ export default function TextForm(props) {
 
   return (
     <div
-      className={`container my-3 text-${
+      className={`container text-${
         props.mode === "dark" ? "light" : "dark"
       }`}
     >
@@ -115,6 +120,7 @@ export default function TextForm(props) {
             props.mode === "dark" ? "secondary" : "primary"
           } m-1`}
           onClick={handlingUpBtn}
+          disabled={text===""}
         >
           Convert To Uppercase
         </button>
@@ -123,6 +129,7 @@ export default function TextForm(props) {
             props.mode === "dark" ? "secondary" : "primary"
           } m-1`}
           onClick={handlingLoBtn}
+          disabled={text===""}
         >
           Convert To Lowercase
         </button>
@@ -130,7 +137,17 @@ export default function TextForm(props) {
           className={`btn btn-${
             props.mode === "dark" ? "secondary" : "primary"
           } m-1`}
+          onClick={removeExtraSpaces}
+          disabled={text===""}
+        >
+          Remove Extra Spaces
+        </button>
+        <button
+          className={`btn btn-${
+            props.mode === "dark" ? "secondary" : "primary"
+          } m-1`}
           onClick={clearText}
+          disabled={text===""}
         >
           Clear
         </button>
@@ -139,6 +156,7 @@ export default function TextForm(props) {
             props.mode === "dark" ? "secondary" : "primary"
           } m-1`}
           onClick={copyText}
+          disabled={text===""}
         >
           Copy To Clipboard
         </button>
@@ -217,12 +235,10 @@ export default function TextForm(props) {
         <h3>Summary of The Text</h3>
         <hr />
         <p>
-          Total Words :{" "}
-          {text.endsWith(" ") || text.length === 0
-            ? text.split(" ").length - 1
-            : text.split(" ").length}
+          Total Words : {text.split(/\s+/).filter((element)=>{return element.length !== 0}).length}
         </p>
         <p>Total Characters : {text.length}</p>
+        <p>Time to Read : {(text.split(/\s+/).filter((element)=>{return element.length !== 0}).length) * 0.008}</p>
       </div>
       <div>
         <hr id="secHr" style={{ display: "none" }} />
@@ -240,7 +256,7 @@ export default function TextForm(props) {
         >
           <p>
             {text.length === 0
-              ? "Enter Text in textbox above to see Preview of text here..."
+              ? "Nothing to Preview"
               : text}
           </p>
         </div>
